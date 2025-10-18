@@ -51,14 +51,42 @@ app.get("/campgrounds/:id", async (req, res) => {
 
 app.post('/campgrounds/new', async (req, res) => {
   try {
-    const campground = new Campground(req.body); 
+    const campground = new Campground(req.body);
     await campground.save();
-    res.status(201).json(campground); 
+    res.status(201).json(campground);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Something went wrong" });
   }
 })
+
+
+app.put('/campgrounds/:id/edit', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const campground = await Campground.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      { new: true }
+    );
+
+    if (!campground) {
+      return res.status(404).json({ error: "Campground not found" });
+    }
+
+    res.json(campground);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.delete('/campgrounds/:id', async (req, res) => {
+  const { id } = req.params;
+  const campground = await Campground.findByIdAndDelete(id);
+  if (!campground) return res.status(404).json({ error: "Not found" });
+  res.json({ message: "Deleted successfully", campground });
+});
 
 app.listen(5000, () => {
   console.log("Server is runnig on port 5000")

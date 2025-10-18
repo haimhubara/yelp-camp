@@ -1,1 +1,1 @@
-export {getAllCampgrounds, getCampground, addCampground} from "./campgroundService"
+export {getAllCampgrounds, getCampground, addCampground, editCampgrounds, deleteCampground} from "./campgroundService"
