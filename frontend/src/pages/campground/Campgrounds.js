@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { getAllCampgrounds } from "../../services"
 import { CampgroundCard } from "./components/CampgroundCard"
-import { Link } from "react-router-dom"
 
 export const Campgrounds = () => {
 
@@ -21,7 +20,6 @@ export const Campgrounds = () => {
 
   return (
     <main>
-      <Link to="/campgrounds/new" className=" text-4xl font-medium text-blue-600 dark:text-blue-500 hover:underline">AddCampground</Link>
       {
         campegrounds.map((campground) => {
           return (
