@@ -29,6 +29,7 @@ export const EditCampground = () => {
             location.current?.value &&
             image.current?.value &&
             price.current?.value &&
+            parseFloat(price.current?.value) > 0 &&
             description.current?.value;
         setValidForm(!!allFilled);
     }, [errors]);
