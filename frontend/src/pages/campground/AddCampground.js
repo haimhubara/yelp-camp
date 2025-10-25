@@ -46,7 +46,7 @@ export const AddCampground = () => {
             title: !title.current.value.trim(),
             location: !location.current.value.trim(),
             image: !image.current.value.trim(),
-            price: !price.current.value.trim(),
+            price: !price.current.value.trim() || parseFloat(price.current.value) <= 0,
             description: !description.current.value.trim()
         });
 
@@ -75,20 +75,51 @@ export const AddCampground = () => {
             console.log(error)
         }
     }
+
+      const onChange = (e) => {
+        const input = e.target.id
+        switch (input) {
+            case "title":
+                setErrors((prev) => ({ ...prev, title: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "location":
+                setErrors((prev) => ({ ...prev, location: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "image":
+                setErrors((prev) => ({ ...prev, image: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "price":
+                const priceValue = parseFloat(e.target.value);
+                setErrors((prev) => ({
+                    ...prev,
+                    price: e.target.value.trim() === "" || priceValue <= 0 ? true : false
+                }));
+                break;
+            case "description":
+                setErrors((prev) => ({ ...prev, description: e.target.value.trim() === "" ? true : false, }))
+                break;
+            default:
+                break;
+        }
+    }
+    
+
+
+    
     return (
         <main>
             <form onSubmit={validForm ? handleAddCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
                     <label htmlFor="title" className={errors.title === null? initialLabel: errors.title ? errorLabel: validLabel}>Title</label>
-                    <input onChange={(e) =>setErrors((prev) => ({...prev,title: e.target.value.trim() === "" ? true : false,}))} ref={title} type="title" id="title" className={errors.title === null? initialInput: errors.title ? errorInput: validInput} required />
+                    <input onChange={onChange} ref={title} type="title" id="title" className={errors.title === null? initialInput: errors.title ? errorInput: validInput} required />
                 </div>
                 <div className="mb-5">
                     <label className={errors.location === null? initialLabel: errors.location ? errorLabel: validLabel} htmlFor="location">Location</label>
-                    <input onChange={(e) =>setErrors((prev) => ({...prev,location: e.target.value.trim() === "" ? true : false,}))} ref={location} type="location" id="location" className={errors.location === null? initialInput: errors.location ? errorInput: validInput} required />
+                    <input onChange={onChange} ref={location} type="location" id="location" className={errors.location === null? initialInput: errors.location ? errorInput: validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="email" className={errors.image === null? initialLabel: errors.image ? errorLabel: validLabel}>Image Url</label>
-                    <input onChange={(e) =>setErrors((prev) => ({...prev,image: e.target.value.trim() === "" ? true : false,}))} ref={image} type="string" id="image"  className={errors.image === null? initialInput: errors.image ? errorInput: validInput} required />
+                    <input onChange={onChange} ref={image} type="string" id="image"  className={errors.image === null? initialInput: errors.image ? errorInput: validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="message" className={errors.price === null? initialLabel: errors.price ? errorLabel: validLabel}>Price</label>
@@ -100,13 +131,13 @@ export const AddCampground = () => {
                                 </svg>
                             </div>
                         </span>
-                        <input onChange={(e) =>setErrors((prev) => ({...prev,price: e.target.value.trim() === "" ? true : false,}))} ref={price} type="price" id="price" className={errors.price === null? initialInput: errors.price ? errorInput: validInput} required>
+                        <input onChange={onChange} ref={price} min={0} type="number" id="price" className={errors.price === null? initialInput: errors.price ? errorInput: validInput} required>
                         </input>
                     </div>
                 </div>
                 <div className="mb-5">
                     <label htmlFor="description" className={errors.description === null? initialLabel: errors.description ? errorLabel: validLabel}>Description</label>
-                    <textarea onChange={(e) =>setErrors((prev) => ({...prev,description: e.target.value.trim() === "" ? true : false,}))} ref={description} id="description" rows="4"className={errors.description === null? initialInput: errors.description ? errorInput: validInput}  required ></textarea>
+                    <textarea onChange={onChange} ref={description} id="description" rows="4"className={errors.description === null? initialInput: errors.description ? errorInput: validInput}  required ></textarea>
                 </div>
                 <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Campground</button>
             </form>

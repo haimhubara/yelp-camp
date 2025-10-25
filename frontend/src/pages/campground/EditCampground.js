@@ -2,8 +2,37 @@ import { useEffect, useRef, useState } from "react"
 import { editCampgrounds, getCampground } from "../../services"
 import { useNavigate, useParams } from "react-router-dom"
 
+const validInput = "bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
+const initialInput = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+const errorInput = "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+
+const initialLabel = "block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+const validLabel = "block mb-2 text-sm font-medium text-green-700 dark:text-green-500"
+const errorLabel = "block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
+
+
 
 export const EditCampground = () => {
+
+    const [validForm, setValidForm] = useState(false);
+    const [errors, setErrors] = useState({
+
+        title: null,
+        location: null,
+        image: null,
+        price: null,
+        description: null
+    });
+    useEffect(() => {
+        const allFilled =
+            title.current?.value &&
+            location.current?.value &&
+            image.current?.value &&
+            price.current?.value &&
+            description.current?.value;
+        setValidForm(!!allFilled);
+    }, [errors]);
+
 
     const title = useRef()
     const location = useRef()
@@ -21,6 +50,19 @@ export const EditCampground = () => {
         }
         getCampgroundById()
     }, [id])
+
+    const handleNoValidForm = (event) => {
+        event.preventDefault();
+        setErrors({
+            title: !title.current.value.trim(),
+            location: !location.current.value.trim(),
+            image: !image.current.value.trim(),
+            price: !price.current.value.trim() || parseFloat(price.current.value) <= 0,
+            description: !description.current.value.trim()
+        });
+
+    }
+
 
     const handleEditCampground = async (event) => {
         try {
@@ -42,23 +84,56 @@ export const EditCampground = () => {
             console.log(error)
         }
     }
+
+    const onChange = (e) => {
+        const input = e.target.id
+        switch (input) {
+            case "title":
+                setCampground({ ...campground, title: e.target.value })
+                setErrors((prev) => ({ ...prev, title: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "location":
+                setCampground({ ...campground, location: e.target.value })
+                setErrors((prev) => ({ ...prev, location: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "image":
+                setCampground({ ...campground, image: e.target.value })
+                setErrors((prev) => ({ ...prev, image: e.target.value.trim() === "" ? true : false, }))
+                break;
+            case "price":
+                const priceValue = parseFloat(e.target.value);
+                setCampground({ ...campground, price: e.target.value });
+                setErrors((prev) => ({
+                    ...prev,
+                    price: e.target.value.trim() === "" || priceValue <= 0 ? true : false
+                }));
+                break;
+            case "description":
+                setCampground({ ...campground, description: e.target.value })
+                setErrors((prev) => ({ ...prev, description: e.target.value.trim() === "" ? true : false, }))
+                break;
+            default:
+                break;
+        }
+    }
+
     return (
         <main>
-            <form onSubmit={handleEditCampground} className="max-w-sm mx-auto">
+            <form onSubmit={validForm ? handleEditCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
-                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-                    <input onChange={(e) => setCampground({ ...campground, title: e.target.value })} ref={title} value={campground.title} type="title" id="title" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                    <label htmlFor="title" className={errors.title === null ? initialLabel : errors.title ? errorLabel : validLabel}>Title</label>
+                    <input onChange={onChange} ref={title} value={campground.title} type="title" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
-                    <label htmlFor="location" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
-                    <input onChange={(e) => setCampground({ ...campground, location: e.target.value })} value={campground.location} ref={location} type="location" id="location" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                    <label htmlFor="location" className={errors.location === null ? initialLabel : errors.location ? errorLabel : validLabel}>Location</label>
+                    <input onChange={onChange} value={campground.location} ref={location} type="location" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
-                    <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image Url</label>
-                    <input onChange={(e) => setCampground({ ...campground, image: e.target.value })} value={campground.image} ref={image} type="string" id="image" className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light" required />
+                    <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
+                    <input onChange={onChange} value={campground.image} ref={image} type="string" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
-                    <label for="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                    <label htmlFor="message" className={errors.price === null ? initialLabel : errors.price ? errorLabel : validLabel}>Price</label>
                     <div className="flex">
                         <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                             <div className="w-4 h-4 text-gray-500 dark:text-gray-400" >
@@ -67,13 +142,13 @@ export const EditCampground = () => {
                                 </svg>
                             </div>
                         </span>
-                        <input onChange={(e) => setCampground({ ...campground, price: e.target.value })} value={campground.price} ref={price} type="price" id="price" className="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <input onChange={onChange} value={campground.price} ref={price} min={0} type="number" id="price" className={errors.price === null ? initialInput : errors.price ? errorInput : validInput} required>
                         </input>
                     </div>
                 </div>
                 <div className="mb-5">
-                    <label for="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <textarea onChange={(e) => setCampground({ ...campground, description: e.target.value })} value={campground.description} ref={description} id="description" rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ></textarea>
+                    <label htmlFor="description" className={errors.description === null ? initialLabel : errors.description ? errorLabel : validLabel}>Description</label>
+                    <textarea onChange={onChange} value={campground.description} ref={description} id="description" rows="4" className={errors.description === null ? initialInput : errors.description ? errorInput : validInput} required></textarea>
                 </div>
                 <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Edit Campground</button>
             </form>
