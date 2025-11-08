@@ -102,11 +102,13 @@ export const EditCampground = () => {
                 setErrors((prev) => ({ ...prev, image: e.target.value.trim() === "" ? true : false, }))
                 break;
             case "price":
+                const value = e.target.value.trim();
+                const numberRegex = /^\d+(\.\d+)?$/;
                 const priceValue = parseFloat(e.target.value);
                 setCampground({ ...campground, price: e.target.value });
                 setErrors((prev) => ({
                     ...prev,
-                    price: e.target.value.trim() === "" || priceValue <= 0 ? true : false
+                    price: !numberRegex.test(value) || e.target.value.trim() === "" || priceValue <= 0 ? true : false
                 }));
                 break;
             case "description":
