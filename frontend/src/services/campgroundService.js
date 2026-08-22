@@ -38,7 +38,7 @@ export const addCampground = async (campgroundData) => {
     return data
 };
 
-export const editCampgrounds = async (newCampground,id) => {
+export const editCampgrounds = async (newCampground, id) => {
     const requestOption = {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
