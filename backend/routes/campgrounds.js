@@ -24,20 +24,33 @@ router.get("/", catchAsync(async (req, res) => {
 }));
 
 router.get("/:id", catchAsync(async (req, res) => {
-  const campground = await Campground.findById(req.params.id).populate('reviews');
-  if (!campground) {
-    return res.status(404).json({ error: "Campground not found" });
-  }
-  res.json(campground);
+    const campground = await Campground
+        .findById(req.params.id)
+        .populate("reviews");
+
+    if (!campground) {
+        return res.status(404).json({
+            success: false,
+            message: "Campground not found"
+        });
+    }
+
+    res.json(campground);
 }));
 
-router.post('/new', validataCampground, catchAsync(async (req, res, next) => {
-  validataCampground(campground)
-  const campground = new Campground(req.body);
-  await campground.save();
-  res.status(201).json(campground);
-}))
+router.post('/new',validataCampground,catchAsync(async (req, res) => {
 
+        const campground = new Campground(req.body);
+
+        await campground.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Campground created successfully",
+            campground
+        });
+    })
+);
 
 router.put('/:id/edit', validataCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -48,24 +61,35 @@ router.put('/:id/edit', validataCampground, catchAsync(async (req, res) => {
   );
 
   if (!campground) {
-    return res.status(404).json({ error: "Campground not found" });
+    return res.status(404).json({
+      success: false,
+      message: "Campground not found"
+    });
   }
 
-  res.json(campground);
-}));
+  res.status(200).json({
+    success: true,
+    message: "Campground updated successfully",
+    campground
+  });
+})
+);
 
 router.delete('/:id', catchAsync(async (req, res) => {
+
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
     if (!campground) {
-        return res.status(404).json({ error: "Not found" });
+        console.log("Campground not found");
+
+        return res.status(404).json({
+            success: false,
+            message: "Campground not found"
+        });
     }
-    await Review.deleteMany({
-        _id: { $in: campground.reviews }
-    });
     res.json({
-        message: "Deleted successfully",
-        campground
+        success: true,
+        message: "Campground deleted successfully"
     });
 }));
 

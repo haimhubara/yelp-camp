@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-export const CampgroundInfo = ({campground,handleDeleteCampground}) => {
+export const CampgroundInfo = ({campground,onDelete}) => {
   return (
     <div className="lg:w-1/2 w-full rounded overflow-hidden">
           <img
@@ -22,7 +22,7 @@ export const CampgroundInfo = ({campground,handleDeleteCampground}) => {
               Edit Campground
             </Link>
             <button
-              onClick={handleDeleteCampground}
+              onClick={onDelete}
               type="button"
               className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
             >

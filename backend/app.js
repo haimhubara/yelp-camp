@@ -1,10 +1,26 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session')
 const ExpressError = require('./utils/ExpressError');
 
 const app = express()
 app.use(express.json());
+
+const sessionConfig = {
+  secret: "thisshouldberealsecret",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  }
+};
+
+
+app.use(session(sessionConfig));
+
 
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
@@ -29,8 +45,8 @@ db.once("open", () => {
 
 
 
-app.use("/campgrounds",campgrounds);
-app.use("/campgrounds/:id/review",reviews);
+app.use("/campgrounds", campgrounds);
+app.use("/campgrounds/:id/review", reviews);
 
 app.get("/", (req, res) => {
   res.send("Hello from yelpcamp")

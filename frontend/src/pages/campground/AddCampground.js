@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { addCampground } from "../../services"
 import { useNavigate } from "react-router-dom"
+import { UseTitle } from "../../hooks/UseTitle"
 
 const validInput = "bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
 const initialInput = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -13,6 +14,7 @@ const errorLabel = "block mb-2 text-sm font-medium text-red-700 dark:text-red-50
 
 export const AddCampground = () => {
 
+    UseTitle("Add campgrounds");
     const [validForm, setValidForm] = useState(false);
     const [errors, setErrors] = useState({
 
@@ -53,9 +55,6 @@ export const AddCampground = () => {
 
     }
 
-
-
-
     const handleAddCampground = async (event) => {
         try {
             event.preventDefault();
@@ -67,8 +66,13 @@ export const AddCampground = () => {
                 description: description.current.value
             }
             const data = await addCampground(campgroundData);
-            if (data && data._id) {
-                navigate(`/campgrounds/${data._id}`)
+            if (data.success) {
+                navigate(`/campgrounds/${data.campground._id}`, {
+                    state: {
+                        successMessage: data.message,
+                        type: "success"
+                    }
+                });
             } else {
                 alert("Something went wrong. Please try again.");
             }
