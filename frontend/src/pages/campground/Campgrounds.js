@@ -24,7 +24,7 @@ export const Campgrounds = () => {
       }
     }
     getCampgrounds()
-  }, [setCampgrounds])
+  }, [])
 
   return (
     <main>

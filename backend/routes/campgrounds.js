@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const Campground = require('../models/campground');
 const { campgroundSchema } = require('../schems')
 const ExpressError = require('../utils/ExpressError');
+const { isLoggedIn } = require('../middleware')
 
 
 const validataCampground = (req, res, next) => {
@@ -24,35 +25,34 @@ router.get("/", catchAsync(async (req, res) => {
 }));
 
 router.get("/:id", catchAsync(async (req, res) => {
-    const campground = await Campground
-        .findById(req.params.id)
-        .populate("reviews");
+  const campground = await Campground
+    .findById(req.params.id)
+    .populate("reviews");
 
-    if (!campground) {
-        return res.status(404).json({
-            success: false,
-            message: "Campground not found"
-        });
-    }
+  if (!campground) {
+    return res.status(404).json({
+      success: false,
+      message: "Campground not found"
+    });
+  }
 
-    res.json(campground);
+  res.json(campground);
 }));
 
-router.post('/new',validataCampground,catchAsync(async (req, res) => {
+router.post('/new', isLoggedIn, validataCampground, catchAsync(async (req, res) => {
+  const campground = new Campground(req.body);
 
-        const campground = new Campground(req.body);
+  await campground.save();
 
-        await campground.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Campground created successfully",
-            campground
-        });
-    })
+  res.status(201).json({
+    success: true,
+    message: "Campground created successfully",
+    campground
+  });
+})
 );
 
-router.put('/:id/edit', validataCampground, catchAsync(async (req, res) => {
+router.put('/:id/edit', isLoggedIn, validataCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findByIdAndUpdate(
     id,
@@ -75,22 +75,22 @@ router.put('/:id/edit', validataCampground, catchAsync(async (req, res) => {
 })
 );
 
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
 
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
-    if (!campground) {
-        console.log("Campground not found");
+  const { id } = req.params;
+  const campground = await Campground.findByIdAndDelete(id);
+  if (!campground) {
+    console.log("Campground not found");
 
-        return res.status(404).json({
-            success: false,
-            message: "Campground not found"
-        });
-    }
-    res.json({
-        success: true,
-        message: "Campground deleted successfully"
+    return res.status(404).json({
+      success: false,
+      message: "Campground not found"
     });
+  }
+  res.json({
+    success: true,
+    message: "Campground deleted successfully"
+  });
 }));
 
 module.exports = router;

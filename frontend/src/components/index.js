@@ -1,3 +1,5 @@
 export {Header} from "./Layouts/Header"
 export {Footer} from "./Layouts/Footer"
 export {AlertMessage} from "./AlertMessage"
+export {DropdownLoggedOut} from "./Elements/DropdownLoggedOut"
+export {DropdownLoggedIn} from "./Elements/DropdownLoggedIn"

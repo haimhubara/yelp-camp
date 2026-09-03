@@ -92,16 +92,21 @@ export const EditCampground = () => {
             price: price.current.value,
             description: description.current.value
         };
+        try {
+            const data = await editCampgrounds(campgroundData, campground._id);
 
-        const data = await editCampgrounds(campgroundData, campground._id);
-
-        if (data.success) {
-            navigate(`/campgrounds/${data.campground._id}`, {
-                state: {
-                    type: "success",
-                    successMessage: data.message
-                }
-            });
+            if (data.success) {
+                navigate(`/campgrounds/${data.campground._id}`, {
+                    state: {
+                        type: "success",
+                        successMessage: data.message
+                    }
+                });
+            }
+        } catch (error) {
+            if (error.status === 401) {
+              setError(error.message);
+            }
         }
 
     };
@@ -156,15 +161,15 @@ export const EditCampground = () => {
             <form onSubmit={validForm ? handleEditCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
                     <label htmlFor="title" className={errors.title === null ? initialLabel : errors.title ? errorLabel : validLabel}>Title</label>
-                    <input onChange={onChange} ref={title} value={campground.title} type="title" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={title} value={campground.title} type="text" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="location" className={errors.location === null ? initialLabel : errors.location ? errorLabel : validLabel}>Location</label>
-                    <input onChange={onChange} value={campground.location} ref={location} type="location" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
+                    <input onChange={onChange} value={campground.location} ref={location} type="text" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
-                    <input onChange={onChange} value={campground.image} ref={image} type="string" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
+                    <input onChange={onChange} value={campground.image} ref={image} type="url" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="message" className={errors.price === null ? initialLabel : errors.price ? errorLabel : validLabel}>Price</label>

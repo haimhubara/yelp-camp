@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session')
 const ExpressError = require('./utils/ExpressError');
+const User = require('./models/user')
+const passport = require('passport');
+const localStrategy = require('passport-local');
 
 const app = express()
 app.use(express.json());
@@ -20,13 +23,20 @@ const sessionConfig = {
 
 
 app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session())
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
+const users = require("./routes/users");
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
 
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: 'http://localhost:3000',
+  credentials: true
 }));
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
@@ -44,7 +54,7 @@ db.once("open", () => {
 
 
 
-
+app.use("/", users);
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/review", reviews);
 

@@ -118,15 +118,15 @@ export const AddCampground = () => {
             <form onSubmit={validForm ? handleAddCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
                     <label htmlFor="title" className={errors.title === null ? initialLabel : errors.title ? errorLabel : validLabel}>Title</label>
-                    <input onChange={onChange} ref={title} type="title" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={title} type="text" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label className={errors.location === null ? initialLabel : errors.location ? errorLabel : validLabel} htmlFor="location">Location</label>
-                    <input onChange={onChange} ref={location} type="location" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={location} type="text" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
-                    <input onChange={onChange} ref={image} type="string" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={image} type="url" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="message" className={errors.price === null ? initialLabel : errors.price ? errorLabel : validLabel}>Price</label>

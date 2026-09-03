@@ -5,6 +5,8 @@ const Review = require('../models/review')
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const { reviewSchema } = require('../schems')
+const { isLoggedIn } = require('../middleware')
+
 
 const validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
@@ -17,7 +19,7 @@ const validateReview = (req, res, next) => {
   }
 }
 
-router.post('/', validateReview, catchAsync(async (req, res) => {
+router.post('/', isLoggedIn, validateReview, catchAsync(async (req, res) => {
 
     const campground = await Campground.findById(req.params.id);
 
@@ -42,7 +44,7 @@ router.post('/', validateReview, catchAsync(async (req, res) => {
     });
 }));
 
-router.delete('/:reviewId', catchAsync(async (req, res) => {
+router.delete('/:reviewId', isLoggedIn, catchAsync(async (req, res) => {
 
     const { id, reviewId } = req.params;
 

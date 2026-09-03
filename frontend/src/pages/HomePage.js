@@ -1,12 +1,13 @@
-import { AlertMessage } from "../components";
+import { UseTitle } from "../hooks/UseTitle";
+
 
 export const HomePage = () => {
+    UseTitle("Home")
     return (
         <main>
-            <AlertMessage
-                text="The campground was added successfully!"
-                type="danger"
-            />
+             
+            
+     
 
         </main>
     );
