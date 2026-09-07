@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getCampground, deleteCampground, addReview, deleteReview } from "../../services";
 import { CampgroundInfo, ReviewForm, ReviewList } from "./components";
 import { UseTitle } from "../../hooks/UseTitle"
 import { AlertMessage } from "../../components"
+import { AuthContext } from "../../context";
 
 export const CampGroundDetail = () => {
+
+  const { user } = useContext(AuthContext);
 
   const [commentError, setCommentError] = useState(false);
   const [error, setError] = useState(null);
@@ -156,6 +159,7 @@ export const CampGroundDetail = () => {
         />
 
         <div className="lg:w-1/2 w-full">
+        {user &&
 
           <ReviewForm
             handleReview={handleReview}
@@ -166,6 +170,7 @@ export const CampGroundDetail = () => {
             commentError={commentError}
             setCommentError={setCommentError}
           />
+          }
 
           <ReviewList
             reviews={campground.reviews}

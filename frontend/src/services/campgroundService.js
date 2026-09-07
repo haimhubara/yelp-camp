@@ -51,14 +51,14 @@ export const editCampgrounds = async (newCampground, id) => {
         `${process.env.REACT_APP_HOST}/campgrounds/${id}/edit`,
         requestOption
     )
+    const data = await response.json();
 
     if (!response.ok) {
-        const error = new Error(response.statusText);
+        const error = new Error(data.message || response.statusText);
         error.status = response.status;
         throw error;
     }
 
-    const data = await response.json();
     return data;
 }
 
@@ -66,6 +66,7 @@ export const deleteCampground = async (id) => {
     const requestOption = {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
     };
     const response = await fetch(`${process.env.REACT_APP_HOST}/campgrounds/${id}`, requestOption);
 

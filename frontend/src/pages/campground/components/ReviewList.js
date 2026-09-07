@@ -30,7 +30,7 @@ export const ReviewList = ({ reviews, handleDeleteReview }) => {
 
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
           <p className="text-gray-500 dark:text-gray-400">
-            No reviews yet. Be the first to leave one!
+            No reviews yet.
           </p>
         </div>
 

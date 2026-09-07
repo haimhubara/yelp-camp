@@ -104,8 +104,14 @@ export const EditCampground = () => {
                 });
             }
         } catch (error) {
-            if (error.status === 401) {
+            if (error.status === 401 ||error.status === 403) {
               setError(error.message);
+            navigate("/campgrounds/", {
+                    state: {
+                        type: "danger",
+                        successMessage: error.message
+                    }
+                });
             }
         }
 
