@@ -28,7 +28,7 @@ export const AddCampground = () => {
         const allFilled =
             title.current?.value &&
             location.current?.value &&
-            image.current?.value &&
+            image.current?.files?.length > 0 &&
             price.current?.value &&
             parseFloat(price.current?.value) > 0 &&
             description.current?.value;
@@ -48,7 +48,7 @@ export const AddCampground = () => {
         setErrors({
             title: !title.current.value.trim(),
             location: !location.current.value.trim(),
-            image: !image.current.value.trim(),
+            image: !image.current.files.length,
             price: !price.current.value.trim() || parseFloat(price.current.value) <= 0,
             description: !description.current.value.trim()
         });
@@ -58,14 +58,19 @@ export const AddCampground = () => {
     const handleAddCampground = async (event) => {
         try {
             event.preventDefault();
-            const campgroundData = {
-                title: title.current.value,
-                location: location.current.value,
-                image: image.current.value,
-                price: price.current.value,
-                description: description.current.value
+
+            const campgroundData = new FormData();
+
+            campgroundData.append("title", title.current.value);
+            campgroundData.append("location", location.current.value);
+            campgroundData.append("price", price.current.value);
+            campgroundData.append("description", description.current.value);
+            for (let file of image.current.files) {
+                campgroundData.append("image", file);
             }
+
             const data = await addCampground(campgroundData);
+
             if (data.success) {
                 navigate(`/campgrounds/${data.campground._id}`, {
                     state: {
@@ -77,7 +82,7 @@ export const AddCampground = () => {
                 alert("Something went wrong. Please try again.");
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -91,7 +96,10 @@ export const AddCampground = () => {
                 setErrors((prev) => ({ ...prev, location: e.target.value.trim() === "" ? true : false, }))
                 break;
             case "image":
-                setErrors((prev) => ({ ...prev, image: e.target.value.trim() === "" ? true : false, }))
+                setErrors((prev) => ({
+                    ...prev,
+                    image: e.target.files.length === 0
+                }))
                 break;
             case "price":
                 const value = e.target.value.trim();
@@ -126,7 +134,7 @@ export const AddCampground = () => {
                 </div>
                 <div className="mb-5">
                     <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
-                    <input onChange={onChange} ref={image} type="url" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={image} multiple type="file" id="image" accept="image/*" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="message" className={errors.price === null ? initialLabel : errors.price ? errorLabel : validLabel}>Price</label>

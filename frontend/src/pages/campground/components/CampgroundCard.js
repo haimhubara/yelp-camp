@@ -6,7 +6,7 @@ export const CampgroundCard = ({ campground }) => {
       <Link to={`/campgrounds/${campground._id}`}>
         <img
           className="w-32 h-32 object-cover rounded"
-          src={campground.image}
+          src={campground.images[0].url}
           alt={campground.title}
         />
       </Link>

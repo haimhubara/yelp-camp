@@ -25,18 +25,23 @@ export const getCampground = async (id) => {
 export const addCampground = async (campgroundData) => {
     const requestOption = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: 'include',
-        body: JSON.stringify(campgroundData)
+        body: campgroundData
     }
-    const response = await fetch(`${process.env.REACT_APP_HOST}/campgrounds/new`, requestOption)
+
+    const response = await fetch(
+        `${process.env.REACT_APP_HOST}/campgrounds/new`,
+        requestOption
+    );
+
     if (!response.ok) {
         const error = new Error(response.statusText);
         error.status = response.status;
         throw error;
     }
+
     const data = await response.json();
-    return data
+    return data;
 };
 
 export const editCampgrounds = async (newCampground, id) => {
