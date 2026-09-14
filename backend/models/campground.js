@@ -1,12 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const imageSchema = new Schema({
+    url: String,
+    filename: String
+});
+
+imageSchema.virtual('thumbnail').get(function () {
+  return this.url.replace('/upload', '/upload/w_500');
+});
+imageSchema.set('toJSON', { virtuals: true });
+imageSchema.set('toObject', { virtuals: true });
+
 const CampgroundSchema = new Schema({
     title: String,
-    images: [{
-        url:String,
-        filename:String
-    }],
+    images: [imageSchema],
     price: Number,
     description: String,
     location: String,

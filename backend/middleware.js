@@ -12,7 +12,7 @@ module.exports.isLoggedIn = (req, res, next) => {
     }
 
     next();
-}; 
+};
 
 module.exports.isAuthor = async (req, res, next) => {
     const { id } = req.params;
@@ -37,25 +37,50 @@ module.exports.isAuthor = async (req, res, next) => {
 };
 
 module.exports.validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body)
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(',')
-    throw new ExpressError(msg, 400)
-  }
-  else {
-    next()
-  }
-}
+    // Validate campground fields
+    const { error } = campgroundSchema.validate(req.body.campground);
+
+    if (error) {
+        const msg = error.details
+            .map(element => element.message)
+            .join(',');
+
+        throw new ExpressError(msg, 400);
+    }
+
+    // Validate images
+    if (!req.files || req.files.length === 0) {
+        throw new ExpressError("At least one image is required", 400);
+    }
+
+    next();
+};
+module.exports.validateCampgroundEdit = (req, res, next) => {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
+
+    const { error } = campgroundSchema.validate(req.body.campground);
+
+    if (error) {
+        const msg = error.details
+            .map(element => element.message)
+            .join(',');
+
+        throw new ExpressError(msg, 400);
+    }
+
+    next();
+};
 
 module.exports.validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(',')
-    throw new ExpressError(msg, 400)
-  }
-  else {
-    next()
-  }
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map((element) => element.message).join(',')
+        throw new ExpressError(msg, 400)
+    }
+    else {
+        next()
+    }
 }
 
 

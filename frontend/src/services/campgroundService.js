@@ -47,9 +47,8 @@ export const addCampground = async (campgroundData) => {
 export const editCampgrounds = async (newCampground, id) => {
     const requestOption = {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(newCampground)
+        body: newCampground
     }
 
     const response = await fetch(

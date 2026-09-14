@@ -15,8 +15,10 @@ const errorLabel = "block mb-2 text-sm font-medium text-red-700 dark:text-red-50
 
 
 export const EditCampground = () => {
-
+    
+    const [campground, setCampground] = useState({});
     const [validForm, setValidForm] = useState(false);
+    const [imagesToDelete, setImagesToDelete] = useState([]);
     const [error, setError] = useState(null);
     const [errors, setErrors] = useState({
 
@@ -30,12 +32,11 @@ export const EditCampground = () => {
         const allFilled =
             title.current?.value &&
             location.current?.value &&
-            image.current?.value &&
             price.current?.value &&
             parseFloat(price.current?.value) > 0 &&
             description.current?.value;
         setValidForm(!!allFilled);
-    }, [errors]);
+    }, [errors, campground]);
 
 
     const title = useRef()
@@ -45,7 +46,6 @@ export const EditCampground = () => {
     const price = useRef()
     const navigate = useNavigate();
     const { id } = useParams();
-    const [campground, setCampground] = useState({});
 
     UseTitle(`Edit - ${campground.title}`);
 
@@ -73,7 +73,7 @@ export const EditCampground = () => {
         setErrors({
             title: !title.current.value.trim(),
             location: !location.current.value.trim(),
-            image: !image.current.value.trim(),
+            image: false,
             price: !price.current.value.trim() || parseFloat(price.current.value) <= 0,
             description: !description.current.value.trim()
         });
@@ -85,13 +85,20 @@ export const EditCampground = () => {
 
         event.preventDefault();
 
-        const campgroundData = {
-            title: title.current.value,
-            location: location.current.value,
-            image: image.current.value,
-            price: price.current.value,
-            description: description.current.value
-        };
+        const campgroundData = new FormData();
+
+        campgroundData.append("campground[title]", title.current.value);
+        campgroundData.append("campground[location]", location.current.value);
+        campgroundData.append("campground[price]", price.current.value);
+        campgroundData.append("campground[description]", description.current.value);
+
+        for (let file of image.current.files) {
+            campgroundData.append("image", file);
+        }
+
+        imagesToDelete.forEach((filename) => {
+            campgroundData.append("deleteImages", filename);
+        });
         try {
             const data = await editCampgrounds(campgroundData, campground._id);
 
@@ -104,9 +111,9 @@ export const EditCampground = () => {
                 });
             }
         } catch (error) {
-            if (error.status === 401 ||error.status === 403) {
-              setError(error.message);
-            navigate("/campgrounds/", {
+            if (error.status === 401 || error.status === 403) {
+                setError(error.message);
+                navigate("/campgrounds/", {
                     state: {
                         type: "danger",
                         successMessage: error.message
@@ -129,8 +136,10 @@ export const EditCampground = () => {
                 setErrors((prev) => ({ ...prev, location: e.target.value.trim() === "" ? true : false, }))
                 break;
             case "image":
-                setCampground({ ...campground, image: e.target.value })
-                setErrors((prev) => ({ ...prev, image: e.target.value.trim() === "" ? true : false, }))
+                setErrors((prev) => ({
+                    ...prev,
+                    image: false
+                }));
                 break;
             case "price":
                 const value = e.target.value.trim();
@@ -167,15 +176,29 @@ export const EditCampground = () => {
             <form onSubmit={validForm ? handleEditCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
                     <label htmlFor="title" className={errors.title === null ? initialLabel : errors.title ? errorLabel : validLabel}>Title</label>
-                    <input onChange={onChange} ref={title} value={campground.title} type="text" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
+                    <input onChange={onChange} ref={title} value={campground.title || ""} type="text" id="title" className={errors.title === null ? initialInput : errors.title ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="location" className={errors.location === null ? initialLabel : errors.location ? errorLabel : validLabel}>Location</label>
-                    <input onChange={onChange} value={campground.location} ref={location} type="text" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
+                    <input onChange={onChange} value={campground.location || ""} ref={location} type="text" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
-                    <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
-                    <input onChange={onChange} value={campground.image} ref={image} type="url" id="image" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
+                    <label
+                        htmlFor="image"
+                        className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}
+                    >
+                        Add Images
+                    </label>
+
+                    <input
+                        onChange={onChange}
+                        ref={image}
+                        type="file"
+                        id="image"
+                        accept="image/*"
+                        multiple
+                        className={errors.image === null ? initialInput : errors.image ? errorInput : validInput}
+                    />
                 </div>
                 <div className="mb-5">
                     <label htmlFor="message" className={errors.price === null ? initialLabel : errors.price ? errorLabel : validLabel}>Price</label>
@@ -187,13 +210,46 @@ export const EditCampground = () => {
                                 </svg>
                             </div>
                         </span>
-                        <input onChange={onChange} value={campground.price} ref={price} min={0} type="number" id="price" className={errors.price === null ? initialInput : errors.price ? errorInput : validInput} required>
+                        <input onChange={onChange} value={campground.price ?? ""} ref={price} min={0} type="number" id="price" className={errors.price === null ? initialInput : errors.price ? errorInput : validInput} required>
                         </input>
                     </div>
                 </div>
                 <div className="mb-5">
                     <label htmlFor="description" className={errors.description === null ? initialLabel : errors.description ? errorLabel : validLabel}>Description</label>
-                    <textarea onChange={onChange} value={campground.description} ref={description} id="description" rows="4" className={errors.description === null ? initialInput : errors.description ? errorInput : validInput} required></textarea>
+                    <textarea onChange={onChange} value={campground.description || ""} ref={description} id="description" rows="4" className={errors.description === null ? initialInput : errors.description ? errorInput : validInput} required></textarea>
+                </div>
+                <div className="mb-5">
+                    <div className="grid grid-cols-2 gap-4">
+                        {campground.images?.map((img, index) => (
+                            <div key={img.filename} className="relative">
+                                <img
+                                    className="w-full h-40 object-cover p-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded"
+                                   src={img.thumbnail} 
+                                    alt=""
+                                />
+
+                                <label htmlFor={`image-${index}`} className="flex items-center mt-2 text-sm text-gray-900 dark:text-white">
+                                    <input
+                                        id={`image-${index}`}
+                                        type="checkbox"
+                                        value={img.filename}
+                                        checked={imagesToDelete.includes(img.filename)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setImagesToDelete((prev) => [...prev, img.filename]);
+                                            } else {
+                                                setImagesToDelete((prev) =>
+                                                    prev.filter((filename) => filename !== img.filename)
+                                                );
+                                            }
+                                        }}
+                                        className="w-4 h-4 mr-2"
+                                    />
+                                    Delete
+                                </label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Edit Campground</button>
             </form>

@@ -60,11 +60,11 @@ export const AddCampground = () => {
             event.preventDefault();
 
             const campgroundData = new FormData();
+            campgroundData.append("campground[title]", title.current.value);
+            campgroundData.append("campground[location]", location.current.value);
+            campgroundData.append("campground[price]", price.current.value);
+            campgroundData.append("campground[description]", description.current.value);
 
-            campgroundData.append("title", title.current.value);
-            campgroundData.append("location", location.current.value);
-            campgroundData.append("price", price.current.value);
-            campgroundData.append("description", description.current.value);
             for (let file of image.current.files) {
                 campgroundData.append("image", file);
             }
@@ -133,7 +133,7 @@ export const AddCampground = () => {
                     <input onChange={onChange} ref={location} type="text" id="location" className={errors.location === null ? initialInput : errors.location ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">
-                    <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Image Url</label>
+                    <label htmlFor="email" className={errors.image === null ? initialLabel : errors.image ? errorLabel : validLabel}>Images</label>
                     <input onChange={onChange} ref={image} multiple type="file" id="image" accept="image/*" className={errors.image === null ? initialInput : errors.image ? errorInput : validInput} required />
                 </div>
                 <div className="mb-5">

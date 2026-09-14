@@ -4,6 +4,7 @@ import { AuthContext } from "../../../context";
 
 export const CampgroundInfo = ({ campground, onDelete }) => {
 
+
   const { user } = useContext(AuthContext);
   const [currentImage, setCurrentImage] = useState(0);
 
