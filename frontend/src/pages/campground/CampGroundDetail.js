@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getCampground, deleteCampground, addReview, deleteReview } from "../../services";
 import { CampgroundInfo, ReviewForm, ReviewList } from "./components";
 import { UseTitle } from "../../hooks/UseTitle"
-import { AlertMessage } from "../../components"
+import { AlertMessage, MapComponent } from "../../components"
 import { AuthContext } from "../../context";
 
 export const CampGroundDetail = () => {
@@ -134,6 +134,7 @@ export const CampGroundDetail = () => {
       </main>
     );
   }
+  console.log(campground)
 
 
   return (
@@ -159,18 +160,26 @@ export const CampGroundDetail = () => {
         />
 
         <div className="lg:w-1/2 w-full">
-        {user &&
 
-          <ReviewForm
-            handleReview={handleReview}
-            rating={rating}
-            setRating={setRating}
-            comment={comment}
-            handleCommentChange={handleCommentChange}
-            commentError={commentError}
-            setCommentError={setCommentError}
-          />
-          }
+          <div className="mb-8">
+            <MapComponent
+              coordinates={campground.geometry?.coordinates}
+              title={campground.title}
+              location={campground.location}
+            />
+          </div>
+
+          {user && (
+            <ReviewForm
+              handleReview={handleReview}
+              rating={rating}
+              setRating={setRating}
+              comment={comment}
+              handleCommentChange={handleCommentChange}
+              commentError={commentError}
+              setCommentError={setCommentError}
+            />
+          )}
 
           <ReviewList
             reviews={campground.reviews}

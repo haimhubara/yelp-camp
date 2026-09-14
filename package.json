@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@maptiler/client": "^2.5.0"
+  }
+}

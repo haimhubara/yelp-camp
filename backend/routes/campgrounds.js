@@ -8,6 +8,8 @@ const multer = require('multer');
 const campground = require('../models/campground');
 const { cloudinary } = require("../claoudinary")
 const upload = multer({ storage })
+const maptilerClient = require("@maptiler/client");
+maptilerClient.config.apiKey = process.env.MAPTILER_API_KEY;
 
 
 
@@ -34,7 +36,17 @@ router.get("/:id", catchAsync(async (req, res) => {
 }));
 
 router.post('/new', isLoggedIn, upload.array('image'), validateCampground, catchAsync(async (req, res) => {
+  const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
+  if (!geoData.features?.length) {
+    return res.status(404).json({
+      success: false,
+      message: "Could not geocode that location. Please try again and enter a valid location."
+    });
+  }
+
   const campground = new Campground(req.body.campground);
+  campground.geometry = geoData.features[0].geometry;
+  campground.location = geoData.features[0].place_name;
   campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
   campground.author = req.user;
 
@@ -52,6 +64,15 @@ router.put('/:id/edit', isLoggedIn, isAuthor, upload.array('image'), validateCam
 
   const { id } = req.params;
 
+  const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
+  if (!geoData.features?.length) {
+    return res.status(404).json({
+      success: false,
+      message: 'Could not geocode that location. Please try again and enter a valid location.'
+    });
+
+  }
+
   const camp = await Campground.findById(id);
 
   if (!camp) {
@@ -63,9 +84,12 @@ router.put('/:id/edit', isLoggedIn, isAuthor, upload.array('image'), validateCam
 
   // Update regular fields
   camp.title = req.body.campground.title;
-  camp.location = req.body.campground.location;
   camp.price = req.body.campground.price;
   camp.description = req.body.campground.description;
+
+
+  camp.geometry = geoData.features[0].geometry;
+  camp.location = geoData.features[0].place_name;
 
   // Add new images
   if (req.files && req.files.length > 0) {

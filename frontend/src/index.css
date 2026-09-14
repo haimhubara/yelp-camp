@@ -22,3 +22,25 @@ main {
   margin: auto;
   padding: 15px;
 }
+
+
+
+.campground-popup .maplibregl-popup-content {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    border-radius: 8px;
+}
+
+.campground-popup .maplibregl-popup-tip {
+    border-top-color: #f3f4f6;
+}
+
+.campground-popup h3 {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.campground-popup p {
+    margin: 0;
+}
+

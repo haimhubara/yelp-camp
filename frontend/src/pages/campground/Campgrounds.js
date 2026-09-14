@@ -3,7 +3,7 @@ import { getAllCampgrounds } from "../../services"
 import { CampgroundCard } from "./components/CampgroundCard"
 import { UseTitle } from "../../hooks/UseTitle"
 import { useLocation } from "react-router-dom"
-import { AlertMessage } from "../../components"
+import { AlertMessage, CampgroundMap } from "../../components"
 
 export const Campgrounds = () => {
 
@@ -28,19 +28,23 @@ export const Campgrounds = () => {
 
   return (
     <main>
-      {successMessage && (
-        <AlertMessage
-          text={successMessage}
-          type={type}
+    {successMessage && (
+      <AlertMessage
+        text={successMessage}
+        type={type}
+      />
+    )}
+
+    <CampgroundMap campgrounds={campegrounds} />
+
+    {campegrounds.map((campground) => {
+      return (
+        <CampgroundCard
+          key={campground._id}
+          campground={campground}
         />
-      )}
-      {
-        campegrounds.map((campground) => {
-          return (
-            <CampgroundCard key={campground._id} campground={campground} />
-          )
-        })
-      }
-    </main>
+      )
+    })}
+  </main>
   )
 }
