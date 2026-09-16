@@ -4,7 +4,7 @@ import { DropdownLoggedOut, DropdownLoggedIn } from "../index";
 import { AuthContext } from "../../context";
 
 
-export const Header = () => {
+export const Header = ({ isHomePage }) => {
     const activeClass = "block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500";
     const inActiveClass = "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700";
 
@@ -26,7 +26,7 @@ export const Header = () => {
 
     return (
         <header>
-            <nav className="bg-white border-gray-200 dark:bg-gray-900">
+            <nav className={isHomePage ? "bg-transparent" : "bg-white border-gray-200 dark:bg-gray-900"}>
 
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
@@ -74,7 +74,7 @@ export const Header = () => {
                                 </svg>
                                 :
                                 <svg
-                                    className="text-gray-800 dark:text-white"
+                                    className={isHomePage ? "text-black" :"text-gray-800 dark:text-white"}
                                     aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -96,7 +96,10 @@ export const Header = () => {
 
                             <button
                                 onClick={() => setDropDown(prev => !prev)}
-                                className="w-10 h-10 flex items-center justify-center cursor-pointer text-gray-700 dark:text-white"
+                                className={`w-10 h-10 flex items-center justify-center cursor-pointer ${isHomePage
+                                        ? "text-black dark:text-white"
+                                        : "text-gray-700 dark:text-white"
+                                    }`}
                             >
                                 <span className="bi bi-person-circle text-xl relative -top-[1px]"></span>
                             </button>
@@ -143,7 +146,13 @@ export const Header = () => {
 
                     {/* Navigation */}
                     <div className={`${menuOpen ? "block" : "hidden"} w-full md:flex md:w-auto md:order-1`}>
-                        <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                        <ul
+                            className={
+                                isHomePage
+                                    ? "flex flex-col font-medium p-4 md:p-0 mt-4 rounded-lg bg-transparent md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0"
+                                    : "flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+                            }
+                        >
 
                             <li>
                                 <NavLink
