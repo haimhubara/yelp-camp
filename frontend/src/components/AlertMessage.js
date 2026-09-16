@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const AlertMessage = ({ text, type = "info", onClose}) => {
+      useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }, []);
     const [visible, setVisible] = useState(true);
 
     const handleClose = () => {

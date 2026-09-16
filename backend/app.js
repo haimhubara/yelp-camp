@@ -9,16 +9,23 @@ const ExpressError = require('./utils/ExpressError');
 const User = require('./models/user')
 const passport = require('passport');
 const localStrategy = require('passport-local');
+const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
+const helmet = require('helmet');
 
 const app = express()
+app.use(helmet());
+app.set('query parser', 'extended');
 app.use(express.json());
+app.use(sanitizeV5({ replaceWith: '_' }));
 
 const sessionConfig = {
+  name:"session",
   secret: "thisshouldberealsecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure:true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   }

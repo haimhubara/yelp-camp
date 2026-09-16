@@ -56,9 +56,6 @@ module.exports.validateCampground = (req, res, next) => {
     next();
 };
 module.exports.validateCampgroundEdit = (req, res, next) => {
-    console.log("BODY:", req.body);
-    console.log("FILES:", req.files);
-
     const { error } = campgroundSchema.validate(req.body.campground);
 
     if (error) {

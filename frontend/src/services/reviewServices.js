@@ -3,7 +3,7 @@
 export const addReview = async (rating, comment, id) => {
     const requestOption = {
         method: "POST",
-         credentials: "include",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
@@ -14,13 +14,23 @@ export const addReview = async (rating, comment, id) => {
             },
         }),
     };
+
     const response = await fetch(
         `${process.env.REACT_APP_HOST}/campgrounds/${id}/review`,
         requestOption
     );
 
+    if (!response.ok) {
+        const data = await response.json();
+
+        const error = new Error(data.error || response.statusText);
+        error.status = response.status;
+
+        throw error;
+    }
+
     return response;
-}
+};
 
 export const deleteReview = async (campgroundId, reviewId) => {
     const requestOption = {

@@ -134,7 +134,6 @@ export const CampGroundDetail = () => {
       </main>
     );
   }
-  console.log(campground)
 
 
   return (

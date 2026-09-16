@@ -25,9 +25,9 @@ export const getCampground = async (id) => {
 export const addCampground = async (campgroundData) => {
     const requestOption = {
         method: "POST",
-        credentials: 'include',
+        credentials: "include",
         body: campgroundData
-    }
+    };
 
     const response = await fetch(
         `${process.env.REACT_APP_HOST}/campgrounds/new`,
@@ -35,7 +35,12 @@ export const addCampground = async (campgroundData) => {
     );
 
     if (!response.ok) {
-        const error = new Error(response.statusText);
+        const data = await response.json();
+
+        const error = new Error(
+            data.error || data.message || response.statusText
+        );
+
         error.status = response.status;
         throw error;
     }
@@ -49,22 +54,26 @@ export const editCampgrounds = async (newCampground, id) => {
         method: "PUT",
         credentials: "include",
         body: newCampground
-    }
+    };
 
     const response = await fetch(
         `${process.env.REACT_APP_HOST}/campgrounds/${id}/edit`,
         requestOption
-    )
+    );
+
     const data = await response.json();
 
     if (!response.ok) {
-        const error = new Error(data.message || response.statusText);
+        const error = new Error(
+            data.error || data.message || response.statusText
+        );
+
         error.status = response.status;
         throw error;
     }
 
     return data;
-}
+};
 
 export const deleteCampground = async (id) => {
     const requestOption = {

@@ -15,7 +15,7 @@ const errorLabel = "block mb-2 text-sm font-medium text-red-700 dark:text-red-50
 
 
 export const EditCampground = () => {
-    
+
     const [campground, setCampground] = useState({});
     const [validForm, setValidForm] = useState(false);
     const [imagesToDelete, setImagesToDelete] = useState([]);
@@ -120,6 +120,9 @@ export const EditCampground = () => {
                     }
                 });
             }
+            else if (error.status === 400) {
+                setError(error.message);
+            }
         }
 
     };
@@ -160,19 +163,15 @@ export const EditCampground = () => {
         }
     }
 
-    if (error) {
-        return (
-            <main>
+    return (
+        <main>
+            {error && (
                 <AlertMessage
                     text={error}
                     type="danger"
+                    onClose={() => setError(null)}
                 />
-            </main>
-        );
-    }
-
-    return (
-        <main>
+            )}
             <form onSubmit={validForm ? handleEditCampground : handleNoValidForm} className="max-w-sm mx-auto" noValidate>
                 <div className="mb-5">
                     <label htmlFor="title" className={errors.title === null ? initialLabel : errors.title ? errorLabel : validLabel}>Title</label>
@@ -224,7 +223,7 @@ export const EditCampground = () => {
                             <div key={img.filename} className="relative">
                                 <img
                                     className="w-full h-40 object-cover p-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded"
-                                   src={img.thumbnail} 
+                                    src={img.thumbnail}
                                     alt=""
                                 />
 
