@@ -28,8 +28,8 @@ const store = MongoDBStore.create({
   touchAfter: 24 * 60 * 60
 })
 
-store.on("error",(e) => {
-  console.log("SESSION STORE ERROR ",e)
+store.on("error", (e) => {
+  console.log("SESSION STORE ERROR ", e)
 })
 
 const sessionConfig = {
@@ -37,10 +37,10 @@ const sessionConfig = {
   name: "session",
   secret,
   resave: false,
- saveUninitialized: false,
+  saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure:true,
+    secure: process.env.NODE_ENV === "production",
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   }
@@ -107,5 +107,5 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(process.env.PORT || 5000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 5000}`);
+  console.log(`Server is running on port ${process.env.PORT || 5000}`);
 });
