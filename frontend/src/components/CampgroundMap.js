@@ -4,9 +4,7 @@ import { Map, MapStyle, config, Popup } from "@maptiler/sdk";
 export const CampgroundMap = ({ campgrounds }) => {
 
     useEffect(() => {
-        if (!campgrounds?.length) {
-            return;
-        }
+       
 
         config.apiKey = process.env.REACT_APP_MAPTILER_KEY;
 
