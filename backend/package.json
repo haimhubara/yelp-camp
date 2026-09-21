@@ -11,7 +11,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@maptiler/client": "^2.5.0",
     "cloudinary": "^1.41.3",
+    "connect-mongo": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "ejs": "^3.1.10",

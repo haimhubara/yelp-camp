@@ -1,16 +1,18 @@
-if(process.env.NODE_ENV !== "production"){
+if (process.env.NODE_ENV !== "production") {
   require("dotenv",).config({ quiet: true })
 }
 const express = require('express')
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session')
+const MongoDBStore = require('connect-mongo').default;
 const ExpressError = require('./utils/ExpressError');
 const User = require('./models/user')
 const passport = require('passport');
 const localStrategy = require('passport-local');
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const helmet = require('helmet');
+const dbUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/yelp-camp';
 
 const app = express()
 app.use(helmet());
@@ -18,11 +20,24 @@ app.set('query parser', 'extended');
 app.use(express.json());
 app.use(sanitizeV5({ replaceWith: '_' }));
 
+const secret = process.env.SECRET || "thisshouldberealsecret"
+
+const store = MongoDBStore.create({
+  mongoUrl: dbUrl,
+  secret,
+  touchAfter: 24 * 60 * 60
+})
+
+store.on("error",(e) => {
+  console.log("SESSION STORE ERROR ",e)
+})
+
 const sessionConfig = {
-  name:"session",
-  secret: "thisshouldberealsecret",
+  store,
+  name: "session",
+  secret,
   resave: false,
-  saveUninitialized: true,
+ saveUninitialized: false,
   cookie: {
     httpOnly: true,
     // secure:true,
@@ -49,7 +64,8 @@ app.use(cors({
   credentials: true
 }));
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp')
+
+mongoose.connect(dbUrl)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('Mongo connection error:', err));
 
@@ -85,6 +101,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ error: message });
 })
 
-app.listen(5000, () => {
-  console.log("Server is runnig on port 5000")
-})
+app.listen(process.env.PORT || 5000, () => {
+    console.log(`Server is running on port ${process.env.PORT || 5000}`);
+});
