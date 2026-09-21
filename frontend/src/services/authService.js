@@ -3,7 +3,7 @@ export const register = async (authData) => {
     const requestOption = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        redentials: 'include',
+        credentials: 'include',
         body: JSON.stringify(authData)
     }
     const response = await fetch(`${process.env.REACT_APP_HOST}/register`, requestOption)

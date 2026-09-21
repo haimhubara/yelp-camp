@@ -15,6 +15,7 @@ const helmet = require('helmet');
 const dbUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/yelp-camp';
 
 const app = express()
+app.set('trust proxy', 1);
 app.use(helmet());
 app.set('query parser', 'extended');
 app.use(express.json());
