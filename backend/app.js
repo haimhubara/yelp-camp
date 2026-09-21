@@ -32,6 +32,17 @@ store.on("error", (e) => {
   console.log("SESSION STORE ERROR ", e)
 })
 
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://yelp-camp-frontend.netlify.app'
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 const sessionConfig = {
   store,
   name: "session",
@@ -41,6 +52,7 @@ const sessionConfig = {
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   }
@@ -59,15 +71,6 @@ const users = require("./routes/users");
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://yelp-camp-frontend.netlify.app'
-];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
 
 
 mongoose.connect(dbUrl)
