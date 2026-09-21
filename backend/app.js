@@ -59,8 +59,13 @@ const users = require("./routes/users");
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://yelp-camp-frontend.netlify.app'
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: allowedOrigins,
   credentials: true
 }));
 
